@@ -1,0 +1,22 @@
+# operating system
+.DS_Store
+
+# ide
+.settings/
+.classpath
+.project
+bin/
+.idea
+out/
+*.iml
+*.ipr
+*.iws
+
+# build tool
+.gradle/
+build/
+
+classes/
+
+# Compiled class file
+*.class

@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+    dependencies { classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+' }
+}
+project.ext.moduleName = 'com.synopsys.integration.issuetracker-jira'
+project.ext.javaUseAutoModuleName = 'true'
+
+group = 'com.synopsys.integration'
+version = '0.0.1-SNAPSHOT'
+description = 'A library providing a framework to be able to interact with issue tracking systems in order to create and resolve issues.'
+
+apply plugin: 'com.blackducksoftware.integration.library'
+
+nexusStaging {
+    packageGroup = 'com.synopsys'
+    stagingProfileId = '4af8bea8300633'
+}
+
+dependencies {
+    api 'com.synopsys.integration:issuetracker-common:0.0.1'
+    api 'com.blackducksoftware.integration:blackduck-common:44.4.6'
+    api 'com.synopsys.integration:int-jira-common:0.6.1'
+
+    testImplementation 'org.mockito:mockito-core:2.18.3'
+}
