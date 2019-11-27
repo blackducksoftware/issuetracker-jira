@@ -2,7 +2,6 @@ package com.synopsys.integration.issuetracker.jira.cloud;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,15 +12,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.issuetracker.common.IssueOperation;
 import com.synopsys.integration.issuetracker.common.config.IssueConfig;
 import com.synopsys.integration.issuetracker.common.exception.IssueTrackerException;
-import com.synopsys.integration.issuetracker.common.message.IssueCommentRequest;
 import com.synopsys.integration.issuetracker.common.message.IssueContentModel;
 import com.synopsys.integration.issuetracker.common.message.IssueCreationRequest;
 import com.synopsys.integration.issuetracker.common.message.IssueResolutionRequest;
 import com.synopsys.integration.issuetracker.common.message.IssueSearchProperties;
 import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
 import com.synopsys.integration.issuetracker.common.message.IssueTrackerResponse;
+import com.synopsys.integration.issuetracker.common.service.TestIssueRequestCreator;
 import com.synopsys.integration.issuetracker.jira.cloud.model.TestIssueCreator;
 import com.synopsys.integration.issuetracker.jira.cloud.model.TestIssueResponse;
 import com.synopsys.integration.issuetracker.jira.cloud.model.TestIssueTypeResponseModel;
@@ -29,7 +29,6 @@ import com.synopsys.integration.issuetracker.jira.cloud.model.TestNewStatusDetai
 import com.synopsys.integration.issuetracker.jira.cloud.model.TestTransitionResponsesModel;
 import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;
-import com.synopsys.integration.jira.common.cloud.model.IssueCreationRequestModel;
 import com.synopsys.integration.jira.common.cloud.model.IssueSearchResponseModel;
 import com.synopsys.integration.jira.common.cloud.service.IssueSearchService;
 import com.synopsys.integration.jira.common.cloud.service.IssueService;
@@ -50,7 +49,7 @@ import com.synopsys.integration.jira.common.rest.service.IssuePropertyService;
 import com.synopsys.integration.jira.common.rest.service.IssueTypeService;
 import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 
-public class JiraCloudServiceTest {
+public class JiraCloudTestActionTest {
     private Gson gson = new Gson();
     // mock services
     private PluginManagerService jiraAppService;
@@ -75,94 +74,7 @@ public class JiraCloudServiceTest {
     }
 
     @Test
-    public void testContextNull() throws Exception {
-        JiraCloudService service = new JiraCloudService(gson);
-        List<IssueTrackerRequest> requests = new ArrayList<>();
-        try {
-            service.sendRequests(null, requests);
-            fail();
-        } catch (IssueTrackerException ex) {
-            assertTrue(ex.getMessage().contains("Context missing."));
-        }
-    }
-
-    @Test
-    public void testRequestsNull() throws Exception {
-        JiraCloudService service = new JiraCloudService(gson);
-        List<IssueTrackerRequest> requests = null;
-        try {
-            service.sendRequests(createContext(), requests);
-            fail();
-        } catch (IssueTrackerException ex) {
-            assertTrue(ex.getMessage().contains("Requests missing."));
-        }
-    }
-
-    @Test
-    public void testRequestsEmpty() throws Exception {
-        JiraCloudService service = new JiraCloudService(gson);
-        List<IssueTrackerRequest> requests = new ArrayList<>();
-        try {
-            service.sendRequests(createContext(), requests);
-            fail();
-        } catch (IssueTrackerException ex) {
-            assertTrue(ex.getMessage().contains("Requests missing."));
-        }
-    }
-
-    @Test
-    public void testAppMissing() throws Exception {
-        JiraCloudService service = new JiraCloudService(gson);
-        List<IssueTrackerRequest> requests = new ArrayList<>();
-        IssueContentModel content = createContentModel();
-        IssueSearchProperties searchProperties = createSearchProperties();
-        requests.add(IssueCreationRequest.of(searchProperties, content));
-        requests.add(IssueCommentRequest.of(searchProperties, content));
-        requests.add(IssueResolutionRequest.of(searchProperties, content));
-        Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(Optional.empty());
-        try {
-            service.sendRequests(createContext(), requests);
-            fail();
-        } catch (IssueTrackerException ex) {
-            assertTrue(ex.getMessage().contains("Please configure the Jira Cloud plugin"));
-        }
-    }
-
-    @Test
-    public void testCreateIssue() throws Exception {
-        Optional<PluginResponseModel> pluginResponseModel = Optional.of(new PluginResponseModel());
-        Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(pluginResponseModel);
-        List<ProjectComponent> pageComponents = new ArrayList<>();
-        pageComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
-        PageOfProjectsResponseModel pageOfProjects = new PageOfProjectsResponseModel(pageComponents);
-        Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(pageOfProjects);
-        List<IssueTypeResponseModel> issueTypes = new ArrayList<>();
-        issueTypes.add(new TestIssueTypeResponseModel());
-        Mockito.when(issueTypeService.getAllIssueTypes()).thenReturn(issueTypes);
-        List<UserDetailsResponseModel> userDetails = new ArrayList<>();
-        userDetails.add(new TestIssueCreator());
-        Mockito.when(userSearchService.findUser(Mockito.anyString())).thenReturn(userDetails);
-        Mockito.when(issueMetaDataService.doesProjectContainIssueType(Mockito.anyString(), Mockito.anyString())).thenReturn(Boolean.TRUE);
-        IssueSearchResponseModel searchResponseModel = new IssueSearchResponseModel();
-        List<IssueResponseModel> issues = new ArrayList<>();
-        searchResponseModel.setIssues(issues);
-        Mockito.when(issueSearchService.queryForIssues(Mockito.anyString())).thenReturn(searchResponseModel);
-        IssueResponseModel issue = createIssueResponse();
-        Mockito.when(issueService.createIssue(Mockito.any(IssueCreationRequestModel.class))).thenReturn(issue);
-
-        JiraCloudService service = new JiraCloudService(gson);
-        List<IssueTrackerRequest> requests = new ArrayList<>();
-        IssueContentModel content = createContentModel();
-        IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
-        requests.add(IssueCreationRequest.of(searchProperties, content));
-        IssueTrackerResponse response = service.sendRequests(createContext(), requests);
-        assertNotNull(response);
-        assertNotNull(response.getStatusMessage());
-        assertTrue(response.getUpdatedIssueKeys().contains("project-1"));
-    }
-
-    @Test
-    public void testResolveIssue() throws Exception {
+    public void testCreateTestAction() throws Exception {
         Optional<PluginResponseModel> pluginResponseModel = Optional.of(new PluginResponseModel());
         Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(pluginResponseModel);
         List<ProjectComponent> pageComponents = new ArrayList<>();
@@ -187,12 +99,19 @@ public class JiraCloudServiceTest {
         Mockito.when(issueService.getTransitions(Mockito.anyString())).thenReturn(transitionsResponseModel);
 
         JiraCloudService service = new JiraCloudService(gson);
-        List<IssueTrackerRequest> requests = new ArrayList<>();
         IssueContentModel content = createContentModel();
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
-        requests.add(IssueCommentRequest.of(searchProperties, content));
-        requests.add(IssueResolutionRequest.of(searchProperties, content));
-        IssueTrackerResponse response = service.sendRequests(createContext(), requests);
+        JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(service, gson, new TestIssueRequestCreator() {
+            @Override
+            public IssueTrackerRequest createRequest(final IssueOperation operation, final String messageId) {
+                if (operation == IssueOperation.RESOLVE) {
+                    return IssueResolutionRequest.of(searchProperties, content);
+                }
+                return IssueCreationRequest.of(searchProperties, content);
+            }
+        });
+
+        IssueTrackerResponse response = testAction.testConfig(createContext());
         assertNotNull(response);
         assertNotNull(response.getStatusMessage());
         assertTrue(response.getUpdatedIssueKeys().contains("project-1"));
