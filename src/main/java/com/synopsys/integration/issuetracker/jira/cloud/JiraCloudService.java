@@ -58,6 +58,12 @@ public class JiraCloudService extends IssueTrackerService<JiraCloudContext> {
 
     @Override
     public IssueTrackerResponse sendRequests(JiraCloudContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
+        if (null == context) {
+            throw new IssueTrackerException("Context missing. Cannot determine Jira Cloud instance.");
+        }
+        if (null == requests || requests.isEmpty()) {
+            throw new IssueTrackerException("Requests missing. Require at least one request.");
+        }
         JiraCloudProperties jiraProperties = context.getIssueTrackerConfig();
         JiraCloudServiceFactory jiraCloudServiceFactory = jiraProperties.createJiraServicesCloudFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();

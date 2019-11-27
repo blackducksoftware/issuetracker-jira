@@ -25,11 +25,12 @@ package com.synopsys.integration.issuetracker.jira.common.util;
 import com.synopsys.integration.issuetracker.common.message.IssueContentLengthValidator;
 
 public class JiraContentValidator extends IssueContentLengthValidator {
-    private static final int CONTENT_LENGTH = 30000;
+    public static final int CONTENT_LENGTH = 30000;
+    public static final int TITLE_LENGTH = 255;
 
     @Override
     public int getTitleLength() {
-        return 255;
+        return TITLE_LENGTH;
     }
 
     @Override

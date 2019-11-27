@@ -58,6 +58,12 @@ public class JiraServerService extends IssueTrackerService<JiraServerContext> {
 
     @Override
     public IssueTrackerResponse sendRequests(JiraServerContext context, List<IssueTrackerRequest> requests) throws IntegrationException {
+        if (null == context) {
+            throw new IssueTrackerException("Context missing. Cannot determine Jira Server instance.");
+        }
+        if (null == requests || requests.isEmpty()) {
+            throw new IssueTrackerException("Requests missing. Require at least one request.");
+        }
         JiraServerProperties jiraProperties = context.getIssueTrackerConfig();
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
@@ -83,6 +89,5 @@ public class JiraServerService extends IssueTrackerService<JiraServerContext> {
         JiraServerIssuePropertyHandler jiraIssuePropertyHandler = new JiraServerIssuePropertyHandler(issueSearchService, issuePropertyService);
         JiraServerIssueHandler jiraIssueHandler = new JiraServerIssueHandler(issueService, jiraProperties, getGson(), jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         return jiraIssueHandler.createOrUpdateIssues(validIssueConfig, requests);
-
     }
 }
