@@ -1,5 +1,6 @@
 package com.synopsys.integration.issuetracker.jira.server;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -20,6 +21,7 @@ import com.synopsys.integration.issuetracker.common.message.IssueCreationRequest
 import com.synopsys.integration.issuetracker.common.message.IssueResolutionRequest;
 import com.synopsys.integration.issuetracker.common.message.IssueSearchProperties;
 import com.synopsys.integration.issuetracker.common.message.IssueTrackerRequest;
+import com.synopsys.integration.issuetracker.common.message.IssueTrackerResponse;
 import com.synopsys.integration.issuetracker.jira.cloud.model.TestIssueCreator;
 import com.synopsys.integration.issuetracker.jira.common.JiraConstants;
 import com.synopsys.integration.issuetracker.jira.common.JiraIssueSearchProperties;
@@ -151,7 +153,10 @@ public class JiraServerServiceTest {
         Mockito.when(issueService.createIssue(Mockito.any(IssueCreationRequestModel.class))).thenReturn(issue);
 
         requests.add(IssueCreationRequest.of(searchProperties, content));
-        service.sendRequests(createContext(), requests);
+        IssueTrackerResponse response = service.sendRequests(createContext(), requests);
+        assertNotNull(response);
+        assertNotNull(response.getStatusMessage());
+        assertTrue(response.getUpdatedIssueKeys().contains("project-1"));
     }
 
     @Test
@@ -183,7 +188,10 @@ public class JiraServerServiceTest {
 
         requests.add(IssueCommentRequest.of(searchProperties, content));
         requests.add(IssueResolutionRequest.of(searchProperties, content));
-        service.sendRequests(createContext(), requests);
+        IssueTrackerResponse response = service.sendRequests(createContext(), requests);
+        assertNotNull(response);
+        assertNotNull(response.getStatusMessage());
+        assertTrue(response.getUpdatedIssueKeys().contains("project-1"));
     }
 
     private JiraServerServiceFactory createMockServiceFactory() {
