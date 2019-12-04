@@ -4,7 +4,6 @@ The issuetracker-jira library supplies a convenient API to create, comment, and 
 ## Build ##
 
 [![Build Status](https://travis-ci.org/blackducksoftware/issuetracker-jira.svg?branch=master)](https://travis-ci.org/blackducksoftware/issuetracker-jira)
-[![Coverage Status](https://coveralls.io/repos/github/blackducksoftware/issuetracker-jira/badge.svg?branch=master)](https://coveralls.io/github/blackducksoftware/issuetracker-jira?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=com.synopsys.integration%3Aissuetracker-jira&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.synopsys.integration%3Aissuetracker-jira)
 
