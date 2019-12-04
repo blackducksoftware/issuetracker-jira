@@ -16,7 +16,7 @@ notifications:
       - bdsoss@blackducksoftware.com
 
 script:
-  - "./gradlew clean build coveralls sonarqube"
+  - "./gradlew clean build sonarqube"
 
 env:
   - DETECT_GRADLE_INCLUDED_CONFIGURATIONS="compile" JAVA_OPTS="-Xmx2048m"
