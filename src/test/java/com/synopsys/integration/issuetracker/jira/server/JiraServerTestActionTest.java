@@ -147,6 +147,7 @@ public class JiraServerTestActionTest {
 
     private JiraIssueSearchProperties createSearchProperties() {
         return new JiraIssueSearchProperties("provider",
+            "providerUrl",
             "topicName",
             "topicValue",
             "subTopicName",
