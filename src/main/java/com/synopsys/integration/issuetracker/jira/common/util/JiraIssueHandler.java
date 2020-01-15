@@ -1,7 +1,7 @@
 /**
  * issuetracker-jira
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -142,8 +142,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         JiraIssueSearchProperties issueProperties = request.getIssueSearchProperties();
         String issueTrackerProjectVersion = issueProperties.getSubTopicValue() != null ? issueProperties.getSubTopicValue() : "unknown";
         String arbitraryItemSubComponent = issueProperties.getSubComponentValue() != null ? issueProperties.getSubTopicValue() : "unknown";
-        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
-            request.getOperation().name(), issueTrackerProjectName, issueProperties.getProvider(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(), issueProperties.getComponentValue(),
+        logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Url: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
+            request.getOperation().name(), issueTrackerProjectName, issueProperties.getProvider(),issueProperties.getProviderUrl(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(), issueProperties.getComponentValue(),
             arbitraryItemSubComponent);
     }
 }

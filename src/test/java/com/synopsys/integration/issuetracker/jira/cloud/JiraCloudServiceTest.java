@@ -229,6 +229,7 @@ public class JiraCloudServiceTest {
 
     private JiraIssueSearchProperties createSearchProperties() {
         return new JiraIssueSearchProperties("provider",
+            "providerUrl",
             "topicName",
             "topicValue",
             "subTopicName",

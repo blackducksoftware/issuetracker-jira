@@ -1,7 +1,7 @@
 /**
  * issuetracker-jira
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -30,6 +30,7 @@ import com.synopsys.integration.util.Stringable;
 public class JiraIssueSearchProperties extends Stringable implements Serializable, IssueSearchProperties {
     private static final long serialVersionUID = -7384976347665315153L;
     private String provider;
+    private String providerUrl;
     private String topicName;
     private String topicValue;
     private String subTopicName;
@@ -47,6 +48,7 @@ public class JiraIssueSearchProperties extends Stringable implements Serializabl
 
     public JiraIssueSearchProperties(
         String provider,
+        String providerUrl,
         String topicName,
         String topicValue,
         String subTopicName,
@@ -59,6 +61,7 @@ public class JiraIssueSearchProperties extends Stringable implements Serializabl
         String additionalKey
     ) {
         this.provider = provider;
+        this.providerUrl = providerUrl;
         this.topicName = topicName;
         this.topicValue = topicValue;
         this.subTopicName = subTopicName;
@@ -73,6 +76,10 @@ public class JiraIssueSearchProperties extends Stringable implements Serializabl
 
     public String getProvider() {
         return provider;
+    }
+
+    public String getProviderUrl() {
+        return providerUrl;
     }
 
     public String getTopicName() {

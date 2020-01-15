@@ -1,7 +1,7 @@
 /**
  * issuetracker-jira
  *
- * Copyright (c) 2019 Synopsys, Inc.
+ * Copyright (c) 2020 Synopsys, Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -66,6 +66,7 @@ public abstract class JiraIssuePropertyHandler<T> {
             subComponentValue = jiraIssueProperties.getSubComponentValue();
         }
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER, jiraIssueProperties.getProvider());
+        appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_PROVIDER_URL, jiraIssueProperties.getProviderUrl());
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_NAME, jiraIssueProperties.getTopicName());
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_TOPIC_VALUE, jiraIssueProperties.getTopicValue());
         appendPropertySearchString(jqlBuilder, JiraConstants.JIRA_ISSUE_PROPERTY_OBJECT_KEY_SUB_TOPIC_NAME, subTopicName);
