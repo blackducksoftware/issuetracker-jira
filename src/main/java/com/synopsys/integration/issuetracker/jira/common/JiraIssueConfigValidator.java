@@ -83,7 +83,7 @@ public abstract class JiraIssueConfigValidator {
         newConfig.setIssueType(validateIssueType(issueConfig, fieldErrors));
 
         if (!fieldErrors.isEmpty()) {
-            throw new IssueTrackerFieldException(fieldErrors);
+            throw new IssueTrackerFieldException(JiraConstants.JIRA_ISSUE_VALIDATION_ERROR_MESSAGE, fieldErrors);
         }
 
         return newConfig;
