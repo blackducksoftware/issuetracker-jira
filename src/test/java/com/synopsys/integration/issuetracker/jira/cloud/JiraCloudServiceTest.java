@@ -272,4 +272,5 @@ public class JiraCloudServiceTest {
         issueResponse.getTransitions().addAll(ids);
         return issueResponse;
     }
+
 }
