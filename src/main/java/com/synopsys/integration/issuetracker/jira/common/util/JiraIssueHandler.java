@@ -110,8 +110,6 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
                 if (errors.has("reporter")) {
                     JsonElement reporterErrorMessage = errors.get("reporter");
                     if (null != reporterErrorMessage) {
-                        String testMessage = String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail,
-                            reporterErrorMessage);
                         return IssueTrackerFieldException.singleFieldError(
                             getIssueCreatorFieldKey(),
                             String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, reporterErrorMessage)
