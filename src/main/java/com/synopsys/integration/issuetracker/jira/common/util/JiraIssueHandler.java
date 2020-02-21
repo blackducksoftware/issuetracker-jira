@@ -24,6 +24,9 @@ package com.synopsys.integration.issuetracker.jira.common.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -102,19 +105,31 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         JsonObject responseContent = gson.fromJson(restException.getHttpResponseContent(), JsonObject.class);
         List<String> responseErrors = new ArrayList<>();
         if (null != responseContent) {
-            JsonObject errors = responseContent.get("errors").getAsJsonObject();
-            JsonElement reporterErrorMessage = errors.get("reporter");
-            if (null != reporterErrorMessage) {
-                return IssueTrackerFieldException.singleFieldError(
-                    getIssueCreatorFieldKey(), String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues.", issueCreatorEmail)
-                );
-            }
+            if (responseContent.has("errors")) {
+                JsonObject errors = responseContent.get("errors").getAsJsonObject();
+                if (errors.has("reporter")) {
+                    JsonElement reporterErrorMessage = errors.get("reporter");
+                    if (null != reporterErrorMessage) {
+                        return IssueTrackerFieldException.singleFieldError(
+                            getIssueCreatorFieldKey(),
+                            String.format("There was a problem assigning '%s' to the issue. Please ensure that the user is assigned to the project and has permission to transition issues. Error: %s", issueCreatorEmail, reporterErrorMessage)
+                        );
+                    }
+                } else {
+                    Set<Map.Entry<String, JsonElement>> entries = errors.entrySet();
+                    List<String> fieldErrors = entries.stream()
+                                                   .map(entry -> String.format("Field '%s' has error %s", entry.getKey(), entry.getValue()))
+                                                   .collect(Collectors.toList());
+                    responseErrors.addAll(fieldErrors);
+                }
 
-            JsonArray errorMessages = responseContent.get("errorMessages").getAsJsonArray();
-            for (JsonElement errorMessage : errorMessages) {
-                responseErrors.add(errorMessage.getAsString());
             }
-            responseErrors.add(errors.toString());
+            if (responseContent.has("errorMessages")) {
+                JsonArray errorMessages = responseContent.get("errorMessages").getAsJsonArray();
+                for (JsonElement errorMessage : errorMessages) {
+                    responseErrors.add(errorMessage.getAsString());
+                }
+            }
         }
 
         String message = restException.getMessage();
@@ -143,7 +158,8 @@ public abstract class JiraIssueHandler extends IssueHandler<IssueResponseModel> 
         String issueTrackerProjectVersion = issueProperties.getSubTopicValue() != null ? issueProperties.getSubTopicValue() : "unknown";
         String arbitraryItemSubComponent = issueProperties.getSubComponentValue() != null ? issueProperties.getSubTopicValue() : "unknown";
         logger.debug("Attempting the {} action on the project {}. Provider: {}, Provider Url: {}, Provider Project: {}[{}]. Category: {}, Component: {}, SubComponent: {}.",
-            request.getOperation().name(), issueTrackerProjectName, issueProperties.getProvider(),issueProperties.getProviderUrl(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(), issueProperties.getComponentValue(),
+            request.getOperation().name(), issueTrackerProjectName, issueProperties.getProvider(), issueProperties.getProviderUrl(), issueProperties.getTopicValue(), issueTrackerProjectVersion, issueProperties.getCategory(),
+            issueProperties.getComponentValue(),
             arbitraryItemSubComponent);
     }
 }
