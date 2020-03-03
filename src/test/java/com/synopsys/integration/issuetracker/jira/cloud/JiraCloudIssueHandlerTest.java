@@ -1,8 +1,9 @@
 package com.synopsys.integration.issuetracker.jira.cloud;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
@@ -61,9 +62,10 @@ public class JiraCloudIssueHandlerTest {
         IssueContentModel issueContentModel = IssueContentModel.of("Test issue", "Attempting to create an issue to reproduce a bug", new ArrayList<>());
         IssueTrackerRequest request = new IssueTrackerRequest(IssueOperation.OPEN, jiraIssueSearchProperties, issueContentModel);
 
-        IssueResponseModel issueResponseModel = jiraCloudIssueHandler.testCreateIssue(issueConfig, request);
-        assertNotNull(issueResponseModel);
-        issueService.deleteIssue(issueResponseModel.getId());
+        Optional<IssueResponseModel> issueResponseModel = jiraCloudIssueHandler.testCreateIssue(issueConfig, request);
+        assertTrue(issueResponseModel.isPresent());
+        String issueId = issueResponseModel.map(IssueResponseModel::getId).orElse("");
+        issueService.deleteIssue(issueId);
 
         logger.alwaysLog("Done");
     }
@@ -75,7 +77,7 @@ public class JiraCloudIssueHandlerTest {
             super(issueService, jiraProperties, gson, jiraTransitionHandler, jiraIssuePropertyHandler, jiraContentValidator);
         }
 
-        public IssueResponseModel testCreateIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
+        public Optional<IssueResponseModel> testCreateIssue(IssueConfig issueConfig, IssueTrackerRequest request) throws IntegrationException {
             return createIssue(issueConfig, request);
         }
 
