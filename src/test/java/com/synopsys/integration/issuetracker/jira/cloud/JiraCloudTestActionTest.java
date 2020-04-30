@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,6 @@ import com.synopsys.integration.jira.common.model.components.StatusDetailsCompon
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
-import com.synopsys.integration.jira.common.model.response.PluginResponseModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
@@ -52,7 +50,7 @@ import com.synopsys.integration.jira.common.rest.service.PluginManagerService;
 public class JiraCloudTestActionTest {
     private Gson gson = new Gson();
     // mock services
-    private PluginManagerService jiraAppService;
+    private PluginManagerService pluginManagerService;
     private ProjectService projectService;
     private UserSearchService userSearchService;
     private IssueTypeService issueTypeService;
@@ -63,7 +61,7 @@ public class JiraCloudTestActionTest {
 
     @BeforeEach
     public void init() {
-        jiraAppService = Mockito.mock(PluginManagerService.class);
+        pluginManagerService = Mockito.mock(PluginManagerService.class);
         projectService = Mockito.mock(ProjectService.class);
         userSearchService = Mockito.mock(UserSearchService.class);
         issueTypeService = Mockito.mock(IssueTypeService.class);
@@ -75,8 +73,7 @@ public class JiraCloudTestActionTest {
 
     @Test
     public void testCreateTestAction() throws Exception {
-        Optional<PluginResponseModel> pluginResponseModel = Optional.of(new PluginResponseModel());
-        Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(pluginResponseModel);
+        Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> pageComponents = new ArrayList<>();
         pageComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         PageOfProjectsResponseModel pageOfProjects = new PageOfProjectsResponseModel(pageComponents);
@@ -103,7 +100,7 @@ public class JiraCloudTestActionTest {
         IssueSearchProperties searchProperties = Mockito.mock(JiraIssueSearchProperties.class);
         JiraCloudCreateIssueTestAction testAction = new JiraCloudCreateIssueTestAction(service, gson, new TestIssueRequestCreator() {
             @Override
-            public IssueTrackerRequest createRequest(final IssueOperation operation, final String messageId) {
+            public IssueTrackerRequest createRequest(IssueOperation operation, String messageId) {
                 if (operation == IssueOperation.RESOLVE) {
                     return IssueResolutionRequest.of(searchProperties, content);
                 }
@@ -119,7 +116,7 @@ public class JiraCloudTestActionTest {
 
     private JiraCloudServiceFactory createMockServiceFactory() {
         JiraCloudServiceFactory serviceFactory = Mockito.mock(JiraCloudServiceFactory.class);
-        Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(jiraAppService);
+        Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(pluginManagerService);
         Mockito.when(serviceFactory.createProjectService()).thenReturn(projectService);
         Mockito.when(serviceFactory.createUserSearchService()).thenReturn(userSearchService);
         Mockito.when(serviceFactory.createIssueTypeService()).thenReturn(issueTypeService);

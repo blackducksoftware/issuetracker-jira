@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +41,6 @@ import com.synopsys.integration.jira.common.model.components.StatusDetailsCompon
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
 import com.synopsys.integration.jira.common.model.response.PageOfProjectsResponseModel;
-import com.synopsys.integration.jira.common.model.response.PluginResponseModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
@@ -119,7 +117,7 @@ public class JiraCloudServiceTest {
         requests.add(IssueCreationRequest.of(searchProperties, content));
         requests.add(IssueCommentRequest.of(searchProperties, content));
         requests.add(IssueResolutionRequest.of(searchProperties, content));
-        Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(Optional.empty());
+        Mockito.when(jiraAppService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(false);
         try {
             service.sendRequests(createContext(), requests);
             fail();
@@ -130,8 +128,7 @@ public class JiraCloudServiceTest {
 
     @Test
     public void testCreateIssue() throws Exception {
-        Optional<PluginResponseModel> pluginResponseModel = Optional.of(new PluginResponseModel());
-        Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(pluginResponseModel);
+        Mockito.when(jiraAppService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> pageComponents = new ArrayList<>();
         pageComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         PageOfProjectsResponseModel pageOfProjects = new PageOfProjectsResponseModel(pageComponents);
@@ -163,8 +160,7 @@ public class JiraCloudServiceTest {
 
     @Test
     public void testResolveIssue() throws Exception {
-        Optional<PluginResponseModel> pluginResponseModel = Optional.of(new PluginResponseModel());
-        Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(pluginResponseModel);
+        Mockito.when(jiraAppService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> pageComponents = new ArrayList<>();
         pageComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         PageOfProjectsResponseModel pageOfProjects = new PageOfProjectsResponseModel(pageComponents);

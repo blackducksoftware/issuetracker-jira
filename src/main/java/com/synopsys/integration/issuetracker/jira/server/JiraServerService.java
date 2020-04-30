@@ -68,7 +68,7 @@ public class JiraServerService extends IssueTrackerService<JiraServerContext> {
         JiraServerServiceFactory jiraServerServiceFactory = jiraProperties.createJiraServicesServerFactory(logger, getGson());
         PluginManagerService jiraAppService = jiraServerServiceFactory.createPluginManagerService();
         logger.debug("Verifying the required application is installed on the Jira server...");
-        boolean missingApp = !jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY).isPresent();
+        boolean missingApp = !jiraAppService.isAppInstalled(jiraProperties.getUsername(), jiraProperties.getPassword(), JiraConstants.JIRA_APP_KEY);
         if (missingApp) {
             throw new IssueTrackerException("Please configure the Jira Server plugin for your server instance via the global Jira Server channel settings.");
         }

@@ -69,7 +69,7 @@ public class JiraCloudService extends IssueTrackerService<JiraCloudContext> {
         PluginManagerService jiraAppService = jiraCloudServiceFactory.createPluginManagerService();
         logger.debug("Verifying the required application is installed on the Jira Cloud server...");
         try {
-            boolean missingApp = !jiraAppService.getInstalledApp(jiraProperties.getUsername(), jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY).isPresent();
+            boolean missingApp = !jiraAppService.isAppInstalled(jiraProperties.getUsername(), jiraProperties.getAccessToken(), JiraConstants.JIRA_APP_KEY);
             if (missingApp) {
                 throw new IssueTrackerException("Please configure the Jira Cloud plugin for your server instance via the global Jira Cloud channel settings.");
             }
