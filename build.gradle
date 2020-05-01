@@ -20,8 +20,8 @@ nexusStaging {
 }
 
 dependencies {
-    api 'com.synopsys.integration:issuetracker-common:0.0.4'
-    api 'com.synopsys.integration:int-jira-common:0.7.0'
+    api 'com.synopsys.integration:issuetracker-common:0.0.5'
+    api 'com.synopsys.integration:int-jira-common:0.7.1'
 
     testImplementation 'org.mockito:mockito-core:2.18.3'
 }
