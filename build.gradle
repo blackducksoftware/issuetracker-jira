@@ -9,7 +9,7 @@ project.ext.moduleName = 'com.synopsys.integration.issuetracker-jira'
 project.ext.javaUseAutoModuleName = 'true'
 
 group = 'com.synopsys.integration'
-version = '0.0.12-SNAPSHOT'
+version = '0.0.12'
 description = 'A library providing a framework to be able to interact with issue tracking systems in order to create and resolve issues.'
 
 apply plugin: 'com.synopsys.integration.library'
