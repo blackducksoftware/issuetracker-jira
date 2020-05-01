@@ -35,7 +35,6 @@ import com.synopsys.integration.jira.common.model.components.ProjectComponent;
 import com.synopsys.integration.jira.common.model.components.StatusDetailsComponent;
 import com.synopsys.integration.jira.common.model.response.IssueResponseModel;
 import com.synopsys.integration.jira.common.model.response.IssueTypeResponseModel;
-import com.synopsys.integration.jira.common.model.response.PluginResponseModel;
 import com.synopsys.integration.jira.common.model.response.TransitionsResponseModel;
 import com.synopsys.integration.jira.common.model.response.UserDetailsResponseModel;
 import com.synopsys.integration.jira.common.rest.service.IssueMetaDataService;
@@ -54,7 +53,7 @@ import com.synopsys.integration.jira.common.server.service.UserSearchService;
 public class JiraServerServiceTest {
     private Gson gson = new Gson();
     // mock services
-    private PluginManagerService jiraAppService;
+    private PluginManagerService pluginManagerService;
     private ProjectService projectService;
     private UserSearchService userSearchService;
     private IssueTypeService issueTypeService;
@@ -65,7 +64,7 @@ public class JiraServerServiceTest {
 
     @BeforeEach
     public void init() {
-        jiraAppService = Mockito.mock(PluginManagerService.class);
+        pluginManagerService = Mockito.mock(PluginManagerService.class);
         projectService = Mockito.mock(ProjectService.class);
         userSearchService = Mockito.mock(UserSearchService.class);
         issueTypeService = Mockito.mock(IssueTypeService.class);
@@ -120,7 +119,7 @@ public class JiraServerServiceTest {
         requests.add(IssueCreationRequest.of(searchProperties, content));
         requests.add(IssueCommentRequest.of(searchProperties, content));
         requests.add(IssueResolutionRequest.of(searchProperties, content));
-        Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(Optional.empty());
+        Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(false);
         try {
             service.sendRequests(createContext(), requests);
             fail();
@@ -131,8 +130,7 @@ public class JiraServerServiceTest {
 
     @Test
     public void testCreateIssue() throws Exception {
-        Optional<PluginResponseModel> pluginResponseModel = Optional.of(new PluginResponseModel());
-        Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(pluginResponseModel);
+        Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> projectComponents = new ArrayList<>();
         projectComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(projectComponents);
@@ -161,8 +159,7 @@ public class JiraServerServiceTest {
 
     @Test
     public void testResolveIssue() throws Exception {
-        Optional<PluginResponseModel> pluginResponseModel = Optional.of(new PluginResponseModel());
-        Mockito.when(jiraAppService.getInstalledApp(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(pluginResponseModel);
+        Mockito.when(pluginManagerService.isAppInstalled(Mockito.anyString(), Mockito.anyString(), Mockito.eq(JiraConstants.JIRA_APP_KEY))).thenReturn(true);
         List<ProjectComponent> projectComponents = new ArrayList<>();
         projectComponents.add(new ProjectComponent(null, "1", "project", "project", null, null, null, null));
         Mockito.when(projectService.getProjectsByName(Mockito.anyString())).thenReturn(projectComponents);
@@ -196,7 +193,7 @@ public class JiraServerServiceTest {
 
     private JiraServerServiceFactory createMockServiceFactory() {
         JiraServerServiceFactory serviceFactory = Mockito.mock(JiraServerServiceFactory.class);
-        Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(jiraAppService);
+        Mockito.when(serviceFactory.createPluginManagerService()).thenReturn(pluginManagerService);
         Mockito.when(serviceFactory.createProjectService()).thenReturn(projectService);
         Mockito.when(serviceFactory.createUserSearchService()).thenReturn(userSearchService);
         Mockito.when(serviceFactory.createIssueTypeService()).thenReturn(issueTypeService);

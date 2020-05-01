@@ -83,7 +83,8 @@ public class JiraCloudCreateIssueTestAction extends IssueCreatorTestAction {
             IssueService issueService = jiraCloudServiceFactory.createIssueService();
             issueService.deleteIssue(issueKey);
         } catch (IntegrationException e) {
-            logger.warn("There was a problem trying to delete a the Jira Cloud distribution test issue, {}: {}", issueKey, e);
+            logger.warn(String.format("There was a problem trying to delete the Jira Cloud distribution test issue, '%s': %s", issueKey, e.getMessage()));
+            logger.debug(e.getMessage(), e);
         }
     }
 

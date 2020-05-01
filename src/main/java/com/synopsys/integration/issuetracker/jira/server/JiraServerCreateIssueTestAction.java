@@ -84,7 +84,8 @@ public class JiraServerCreateIssueTestAction extends IssueCreatorTestAction {
             IssueService issueService = jiraServerServiceFactory.createIssueService();
             issueService.deleteIssue(issueKey);
         } catch (IntegrationException e) {
-            logger.warn("There was a problem trying to delete a the Jira Server distribution test issue, {}: {}", issueKey, e);
+            logger.warn(String.format("There was a problem trying to delete the Jira Server distribution test issue, '%s': %s", issueKey, e.getMessage()));
+            logger.debug(e.getMessage(), e);
         }
     }
 
